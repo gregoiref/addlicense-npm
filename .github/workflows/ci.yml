@@ -96,6 +96,9 @@ jobs:
       - name: Pack tarball
         run: npm pack
       - name: Install from tarball with ${{ matrix.manager }}
+        env:
+          # Prevent yarn berry from enforcing a pre-existing lockfile (CI default).
+          YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
         run: |
           TARBALL=$(ls *.tgz | head -1)
           mkdir /tmp/compat-test && cd /tmp/compat-test
@@ -103,9 +106,8 @@ jobs:
             npm)  npm install "${GITHUB_WORKSPACE}/${TARBALL}" ;;
             pnpm) pnpm add    "${GITHUB_WORKSPACE}/${TARBALL}" ;;
             yarn)
-              yarn init -y
-              # Use node-modules linker (not PnP) so node_modules/.bin is created as expected.
-              yarn config set nodeLinker node-modules
+              # Write config directly: node-modules linker (not PnP) + non-immutable.
+              printf 'nodeLinker: node-modules\nenableImmutableInstalls: false\n' > .yarnrc.yml
               yarn add "${GITHUB_WORKSPACE}/${TARBALL}"
               ;;
             bun) bun add "${GITHUB_WORKSPACE}/${TARBALL}" ;;
