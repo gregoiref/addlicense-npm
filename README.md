@@ -2,6 +2,7 @@
 
 > npm package — [addlicense](https://github.com/GregoireF/addlicense) CLI for Node.js projects and CI.
 
+[![CI](https://github.com/GregoireF/addlicense-npm/actions/workflows/ci.yml/badge.svg)](https://github.com/GregoireF/addlicense-npm/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/@gregoiref/addlicense)](https://www.npmjs.com/package/@gregoiref/addlicense)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 

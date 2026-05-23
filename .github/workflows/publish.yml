@@ -1,7 +1,10 @@
+# SPDX-License-Identifier: MIT
+# Copyright 2026 Grégoire Favreau
 name: Publish
 
 # Triggered by addlicense core after a successful GoReleaser run.
 # Payload: { "version": "v1.1.0" }
+# Requires: NPM_TOKEN secret (npm automation token for @gregoiref scope).
 on:
   repository_dispatch:
     types: [addlicense-released]
@@ -9,28 +12,24 @@ on:
 permissions:
   contents: write
 
-env:
-  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
 jobs:
   publish:
     name: Build platform packages and publish to npm
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
-          node-version: 20
+          node-version: 22
           registry-url: https://registry.npmjs.org
 
       - name: Extract version
         id: version
         run: |
           VERSION="${{ github.event.client_payload.version }}"
-          # Strip leading 'v' for npm (semver: 1.0.0, not v1.0.0)
           NPM_VERSION="${VERSION#v}"
-          echo "tag=${VERSION}"         >> "$GITHUB_OUTPUT"
+          echo "tag=${VERSION}"             >> "$GITHUB_OUTPUT"
           echo "npm_version=${NPM_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Download and unpack platform binaries
@@ -64,7 +63,6 @@ jobs:
         env:
           NPM_VERSION: ${{ steps.version.outputs.npm_version }}
         run: |
-          # Root package
           node -e "
             const fs = require('fs');
             const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
@@ -74,7 +72,6 @@ jobs:
             }
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
           "
-          # Platform packages
           for dir in packages/*/; do
             node -e "
               const fs = require('fs');
@@ -86,6 +83,8 @@ jobs:
           done
 
       - name: Publish platform packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           for dir in packages/*/; do
             echo "Publishing ${dir}"
@@ -93,9 +92,11 @@ jobs:
           done
 
       - name: Publish root package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public
 
-      - name: Commit and tag
+      - name: Commit version bump and tag
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: MIT
+# Copyright 2026 Grégoire Favreau
+license: MIT
+copyright: "Grégoire Favreau"
+ignore:
+  # defaults (mirrors addlicense's built-in DefaultIgnore)
+  - vendor
+  - node_modules
+  - .git
+  - dist
+  - build
+  - "*.pb.go"
+  - "*.gen.go"
+  # documentation — no inline headers in markdown
+  - "*.md"
+  - LICENSE
+  # config / dotfiles — no comment syntax
+  - .gitignore
+  - .npmrc
+  - ".github/CODEOWNERS"
