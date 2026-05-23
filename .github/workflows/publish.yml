@@ -1,0 +1,105 @@
+name: Publish
+
+# Triggered by addlicense core after a successful GoReleaser run.
+# Payload: { "version": "v1.1.0" }
+on:
+  repository_dispatch:
+    types: [addlicense-released]
+
+permissions:
+  contents: write
+
+env:
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+jobs:
+  publish:
+    name: Build platform packages and publish to npm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Extract version
+        id: version
+        run: |
+          VERSION="${{ github.event.client_payload.version }}"
+          # Strip leading 'v' for npm (semver: 1.0.0, not v1.0.0)
+          NPM_VERSION="${VERSION#v}"
+          echo "tag=${VERSION}"         >> "$GITHUB_OUTPUT"
+          echo "npm_version=${NPM_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Download and unpack platform binaries
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          PLATFORMS=(
+            "linux-x64    linux   amd64 addlicense_linux_amd64.tar.gz"
+            "linux-arm64  linux   arm64 addlicense_linux_arm64.tar.gz"
+            "darwin-x64   darwin  amd64 addlicense_darwin_amd64.tar.gz"
+            "darwin-arm64 darwin  arm64 addlicense_darwin_arm64.tar.gz"
+            "win32-x64    windows amd64 addlicense_windows_amd64.zip"
+            "win32-arm64  windows arm64 addlicense_windows_arm64.zip"
+          )
+          BASE_URL="https://github.com/GregoireF/addlicense/releases/download/${TAG}"
+          for entry in "${PLATFORMS[@]}"; do
+            read -r pkg_key _ _ archive <<< "$entry"
+            url="${BASE_URL}/${archive}"
+            echo "Downloading ${url}"
+            curl -sSfL "$url" -o "/tmp/${archive}"
+            dest="packages/${pkg_key}/bin"
+            mkdir -p "$dest"
+            if [[ "$archive" == *.zip ]]; then
+              unzip -q "/tmp/${archive}" -d "$dest"
+            else
+              tar -xzf "/tmp/${archive}" -C "$dest"
+            fi
+          done
+
+      - name: Bump versions in all package.json files
+        env:
+          NPM_VERSION: ${{ steps.version.outputs.npm_version }}
+        run: |
+          # Root package
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.version = process.env.NPM_VERSION;
+            for (const dep of Object.keys(pkg.optionalDependencies || {})) {
+              pkg.optionalDependencies[dep] = process.env.NPM_VERSION;
+            }
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+          # Platform packages
+          for dir in packages/*/; do
+            node -e "
+              const fs = require('fs');
+              const p = '${dir}package.json';
+              const pkg = JSON.parse(fs.readFileSync(p, 'utf8'));
+              pkg.version = process.env.NPM_VERSION;
+              fs.writeFileSync(p, JSON.stringify(pkg, null, 2) + '\n');
+            "
+          done
+
+      - name: Publish platform packages
+        run: |
+          for dir in packages/*/; do
+            echo "Publishing ${dir}"
+            npm publish "$dir" --access public
+          done
+
+      - name: Publish root package
+        run: npm publish --access public
+
+      - name: Commit and tag
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json packages/*/package.json
+          git commit -m "chore(release): publish ${{ steps.version.outputs.tag }}"
+          git tag "${{ steps.version.outputs.tag }}"
+          git push origin main "${{ steps.version.outputs.tag }}"

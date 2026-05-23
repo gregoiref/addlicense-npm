@@ -1,0 +1,5 @@
+﻿node_modules/
+*.log
+.DS_Store
+packages/*/bin/addlicense
+packages/*/bin/addlicense.exe

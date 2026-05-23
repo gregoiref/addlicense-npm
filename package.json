@@ -1,0 +1,33 @@
+{
+  "name": "@gregoiref/addlicense",
+  "version": "1.0.0",
+  "description": "Fast, minimal license header manager for monorepos and CI pipelines",
+  "keywords": ["license", "spdx", "reuse", "copyright", "header", "cli", "compliance"],
+  "homepage": "https://github.com/GregoireF/addlicense",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GregoireF/addlicense-npm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GregoireF/addlicense/issues"
+  },
+  "license": "MIT",
+  "author": "Grégoire Favreau",
+  "bin": {
+    "addlicense": "./scripts/addlicense.js"
+  },
+  "scripts": {
+    "test": "node scripts/addlicense.js --version"
+  },
+  "optionalDependencies": {
+    "@gregoiref/addlicense-linux-x64":   "1.0.0",
+    "@gregoiref/addlicense-linux-arm64":  "1.0.0",
+    "@gregoiref/addlicense-darwin-x64":   "1.0.0",
+    "@gregoiref/addlicense-darwin-arm64": "1.0.0",
+    "@gregoiref/addlicense-win32-x64":    "1.0.0",
+    "@gregoiref/addlicense-win32-arm64":  "1.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

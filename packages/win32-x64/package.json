@@ -1,0 +1,13 @@
+﻿{
+  "name": "@gregoiref/addlicense-win32-x64",
+  "version": "1.0.0",
+  "description": "addlicense binary for win32 x64",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GregoireF/addlicense-npm.git"
+  },
+  "license": "MIT",
+  "os":  ["win32"],
+  "cpu": ["x64"],
+  "files": ["bin/"]
+}
