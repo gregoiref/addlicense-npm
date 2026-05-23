@@ -87,11 +87,12 @@ jobs:
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: latest
-      - name: Upgrade to yarn 4 (berry)
+      - name: Upgrade to yarn berry (stable)
         # yarn v1 classic does not gracefully skip optionalDeps missing from the registry.
-        # Yarn 4 (berry) resolves optionalDependencies that can't be fetched as truly optional.
+        # Yarn berry (v2+) resolves unresolvable optionalDependencies as truly optional.
+        # yarn is not available on npm registry — use corepack (bundled with Node 16.9+).
         if: matrix.manager == 'yarn'
-        run: npm install -g yarn@4
+        run: corepack enable && corepack prepare yarn@stable --activate
       - name: Pack tarball
         run: npm pack
       - name: Install from tarball with ${{ matrix.manager }}
