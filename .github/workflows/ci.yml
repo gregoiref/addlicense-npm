@@ -106,7 +106,8 @@ jobs:
             npm)  npm install "${GITHUB_WORKSPACE}/${TARBALL}" ;;
             pnpm) pnpm add    "${GITHUB_WORKSPACE}/${TARBALL}" ;;
             yarn)
-              # Write config directly: node-modules linker (not PnP) + non-immutable.
+              # yarn berry requires a package.json and .yarnrc.yml before yarn add.
+              echo '{"name":"compat-test","version":"0.0.0","private":true}' > package.json
               printf 'nodeLinker: node-modules\nenableImmutableInstalls: false\n' > .yarnrc.yml
               yarn add "${GITHUB_WORKSPACE}/${TARBALL}"
               ;;
