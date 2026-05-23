@@ -87,6 +87,11 @@ jobs:
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: latest
+      - name: Upgrade to yarn 4 (berry)
+        # yarn v1 classic does not gracefully skip optionalDeps missing from the registry.
+        # Yarn 4 (berry) resolves optionalDependencies that can't be fetched as truly optional.
+        if: matrix.manager == 'yarn'
+        run: npm install -g yarn@4
       - name: Pack tarball
         run: npm pack
       - name: Install from tarball with ${{ matrix.manager }}
@@ -94,12 +99,15 @@ jobs:
           TARBALL=$(ls *.tgz | head -1)
           mkdir /tmp/compat-test && cd /tmp/compat-test
           case "${{ matrix.manager }}" in
-            npm)  npm  install  "${GITHUB_WORKSPACE}/${TARBALL}" ;;
-            pnpm) pnpm add      "${GITHUB_WORKSPACE}/${TARBALL}" ;;
-            # yarn v1 (classic) does not gracefully skip unresolvable optionalDeps.
-            # --ignore-optional still tests that the root package + bin shim install correctly.
-            yarn) yarn add --ignore-optional "${GITHUB_WORKSPACE}/${TARBALL}" ;;
-            bun)  bun  add      "${GITHUB_WORKSPACE}/${TARBALL}" ;;
+            npm)  npm install "${GITHUB_WORKSPACE}/${TARBALL}" ;;
+            pnpm) pnpm add    "${GITHUB_WORKSPACE}/${TARBALL}" ;;
+            yarn)
+              yarn init -y
+              # Use node-modules linker (not PnP) so node_modules/.bin is created as expected.
+              yarn config set nodeLinker node-modules
+              yarn add "${GITHUB_WORKSPACE}/${TARBALL}"
+              ;;
+            bun) bun add "${GITHUB_WORKSPACE}/${TARBALL}" ;;
           esac
       - name: Verify binary shim is present
         run: |
