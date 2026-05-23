@@ -7,9 +7,15 @@
     "url": "https://github.com/GregoireF/addlicense-npm.git"
   },
   "license": "MIT",
-  "os":  ["win32"],
-  "cpu": ["arm64"],
-  "files": ["bin/"],
+  "os": [
+    "win32"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "files": [
+    "bin/"
+  ],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",
     "access": "public"
