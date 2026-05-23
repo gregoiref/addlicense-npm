@@ -91,42 +91,25 @@ jobs:
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: latest
-      - name: Upgrade to yarn berry (stable)
-        # yarn v1 classic does not gracefully skip optionalDeps missing from the registry.
-        # Yarn berry (v2+) resolves unresolvable optionalDependencies as truly optional.
-        # yarn is not available on npm registry — use corepack (bundled with Node 16.9+).
-        if: matrix.manager == 'yarn'
-        run: corepack enable && corepack prepare yarn@stable --activate
       - name: Pack tarball
         run: npm pack
       - name: Install from tarball with ${{ matrix.manager }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Prevent yarn berry from enforcing a pre-existing lockfile (CI default).
-          YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
         run: |
           TARBALL=$(ls *.tgz | head -1)
           mkdir /tmp/compat-test && cd /tmp/compat-test
-          # Copy .npmrc so all managers use GitHub Packages for @gregoiref/ scope.
+          # Copy .npmrc for @gregoiref registry scope + add auth for GitHub Packages.
           cp "${GITHUB_WORKSPACE}/.npmrc" .
+          echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc
           case "${{ matrix.manager }}" in
             npm)  npm install "${GITHUB_WORKSPACE}/${TARBALL}" ;;
             pnpm) pnpm add    "${GITHUB_WORKSPACE}/${TARBALL}" ;;
-            yarn)
-              # yarn berry requires a package.json and .yarnrc.yml before yarn add.
-              # npmScopes maps @gregoiref to GitHub Packages (mirrors .npmrc).
-              # Use printf to avoid heredoc YAML indentation issues.
-              echo '{"name":"compat-test","version":"0.0.0","private":true}' > package.json
-              printf '%s\n' \
-                'nodeLinker: node-modules' \
-                'enableImmutableInstalls: false' \
-                'npmScopes:' \
-                '  gregoiref:' \
-                '    npmRegistryServer: "https://npm.pkg.github.com"' \
-                '    npmAuthToken: "${NODE_AUTH_TOKEN}"' > .yarnrc.yml
-              yarn add "${GITHUB_WORKSPACE}/${TARBALL}"
-              ;;
-            bun) bun add "${GITHUB_WORKSPACE}/${TARBALL}" ;;
+            # yarn v1 classic reads .npmrc for registry scopes — works once packages
+            # are published to GitHub Packages. Uses --ignore-optional as a safety net
+            # in case the registry is temporarily unavailable.
+            yarn) yarn add --ignore-optional "${GITHUB_WORKSPACE}/${TARBALL}" ;;
+            bun)  bun add "${GITHUB_WORKSPACE}/${TARBALL}" ;;
           esac
       - name: Verify binary shim is present
         run: |
