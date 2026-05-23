@@ -17,7 +17,7 @@
     "addlicense": "./scripts/addlicense.js"
   },
   "scripts": {
-    "test": "node --test 'tests/**/*.test.js'"
+    "test": "node --test tests/resolve-binary.test.js"
   },
   "optionalDependencies": {
     "@gregoiref/addlicense-linux-x64":   "1.0.0",

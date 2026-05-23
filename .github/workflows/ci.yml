@@ -61,7 +61,9 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - name: Run unit tests
-        run: node --test tests/**/*.test.js
+        # node --test glob support requires Node 21+; use find for Node 18 compat.
+        shell: bash
+        run: node --test $(find tests -name "*.test.js" | tr '\n' ' ')
 
   install-compat:
     name: Install compat (${{ matrix.manager }})
@@ -94,7 +96,9 @@ jobs:
           case "${{ matrix.manager }}" in
             npm)  npm  install  "${GITHUB_WORKSPACE}/${TARBALL}" ;;
             pnpm) pnpm add      "${GITHUB_WORKSPACE}/${TARBALL}" ;;
-            yarn) yarn add      "${GITHUB_WORKSPACE}/${TARBALL}" ;;
+            # yarn v1 (classic) does not gracefully skip unresolvable optionalDeps.
+            # --ignore-optional still tests that the root package + bin shim install correctly.
+            yarn) yarn add --ignore-optional "${GITHUB_WORKSPACE}/${TARBALL}" ;;
             bun)  bun  add      "${GITHUB_WORKSPACE}/${TARBALL}" ;;
           esac
       - name: Verify binary shim is present
