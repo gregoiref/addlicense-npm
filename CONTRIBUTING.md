@@ -36,6 +36,14 @@ When `addlicense` core publishes a new version:
 3. Add the platform entry to the `PLATFORMS` array in `publish.yml`.
 4. Update `PLATFORM_PACKAGES` in `scripts/addlicense.js`.
 
+## Running tests
+
+```bash
+node --test tests/**/*.test.js
+```
+
+Uses the Node.js built-in test runner — no extra dependencies. Tests cover all branches of `resolveBinary()` in `scripts/addlicense.js` using injectable dependencies (no filesystem or registry access at test time).
+
 ## Commit conventions
 
-Uses `@gregoiref/commitlint-config`. Allowed scopes: `npm`, `scripts`, `packages`, `ci`, `deps`, `release`, `docs`.
+Uses `@gregoiref/commitlint-config`. Allowed scopes: `npm`, `scripts`, `packages`, `tests`, `ci`, `deps`, `release`, `docs`.

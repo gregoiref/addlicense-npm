@@ -6,6 +6,6 @@
 module.exports = {
   extends: ['@gregoiref/commitlint-config'],
   rules: {
-    'scope-enum': [2, 'always', ['npm', 'scripts', 'packages', 'ci', 'deps', 'release', 'docs']],
+    'scope-enum': [2, 'always', ['npm', 'scripts', 'packages', 'tests', 'ci', 'deps', 'release', 'docs']],
   },
 };

@@ -2,19 +2,27 @@
 # Copyright 2026 Grégoire Favreau
 name: Publish
 
-# Triggered by addlicense core after a successful GoReleaser run.
-# Payload: { "version": "v1.1.0" }
-# Requires: NPM_TOKEN secret (npm automation token for @gregoiref scope).
+# Triggered automatically when addlicense core publishes a new release.
+# Can also be run manually (workflow_dispatch) to publish a specific version.
+# Payload / input: { "version": "v1.1.0" }
+# Registry: GitHub Packages (npm.pkg.github.com) — uses GITHUB_TOKEN, no extra secret needed.
 on:
   repository_dispatch:
     types: [addlicense-released]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g. v1.0.0)'
+        required: true
+        type: string
 
 permissions:
   contents: write
+  packages: write
 
 jobs:
   publish:
-    name: Build platform packages and publish to npm
+    name: Build platform packages and publish to GitHub Packages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -22,12 +30,17 @@ jobs:
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 22
-          registry-url: https://registry.npmjs.org
+          registry-url: https://npm.pkg.github.com
 
       - name: Extract version
         id: version
         run: |
-          VERSION="${{ github.event.client_payload.version }}"
+          # Support both repository_dispatch (client_payload) and workflow_dispatch (inputs)
+          if [ -n "${{ github.event.client_payload.version }}" ]; then
+            VERSION="${{ github.event.client_payload.version }}"
+          else
+            VERSION="${{ github.event.inputs.version }}"
+          fi
           NPM_VERSION="${VERSION#v}"
           echo "tag=${VERSION}"             >> "$GITHUB_OUTPUT"
           echo "npm_version=${NPM_VERSION}" >> "$GITHUB_OUTPUT"
@@ -84,7 +97,7 @@ jobs:
 
       - name: Publish platform packages
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           for dir in packages/*/; do
             echo "Publishing ${dir}"
@@ -93,7 +106,7 @@ jobs:
 
       - name: Publish root package
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm publish --access public
 
       - name: Commit version bump and tag

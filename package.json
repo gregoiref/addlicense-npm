@@ -17,7 +17,7 @@
     "addlicense": "./scripts/addlicense.js"
   },
   "scripts": {
-    "test": "node scripts/addlicense.js --version"
+    "test": "node --test 'tests/**/*.test.js'"
   },
   "optionalDependencies": {
     "@gregoiref/addlicense-linux-x64":   "1.0.0",
@@ -29,5 +29,9 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
   }
 }

@@ -3,14 +3,23 @@
 > npm package — [addlicense](https://github.com/GregoireF/addlicense) CLI for Node.js projects and CI.
 
 [![CI](https://github.com/GregoireF/addlicense-npm/actions/workflows/ci.yml/badge.svg)](https://github.com/GregoireF/addlicense-npm/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/@gregoiref/addlicense)](https://www.npmjs.com/package/@gregoiref/addlicense)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Distributes the [addlicense](https://github.com/GregoireF/addlicense) Go binary via npm. Each supported platform ships as an optional dependency — npm resolves the correct one automatically at install time. No Go toolchain required.
 
+> **Registry:** packages are published to [GitHub Packages](https://github.com/GregoireF?tab=packages). Add the registry entry below to your `.npmrc` before installing.
+
 ---
 
 ## Installation
+
+Add to your project `.npmrc`:
+
+```ini
+@gregoiref:registry=https://npm.pkg.github.com
+```
+
+Then install:
 
 ```bash
 # Local dev dependency (recommended)
@@ -23,6 +32,8 @@ npm install --global @gregoiref/addlicense
 npx @gregoiref/addlicense --check .
 ```
 
+Works with **npm**, **pnpm**, **yarn**, and **bun** — verified in CI on every push.
+
 ---
 
 ## Usage
@@ -33,8 +44,6 @@ npx @gregoiref/addlicense --check .
 
 # Add MIT headers
 npx @gregoiref/addlicense --license MIT --author "Acme Corp" .
-
-# npm scripts integration
 ```
 
 ```json
@@ -79,6 +88,17 @@ npm run license:check
 `@gregoiref/addlicense` declares one `optionalDependency` per platform. npm (≥ v7) and yarn (≥ v2) resolve the correct package based on `os` and `cpu` fields and skip incompatible ones. The wrapper script (`scripts/addlicense.js`) resolves the binary path from the installed platform package.
 
 This is the same pattern used by [@biomejs/biome](https://github.com/biomejs/biome) and [@tailwindcss/standalone](https://github.com/tailwindlabs/tailwindcss).
+
+---
+
+## Development
+
+```bash
+# Run unit tests (Node built-in test runner — no dependencies)
+npm test
+```
+
+Tests cover all `resolveBinary()` branches: package installed, package missing, binary absent, unknown platform, win32 `.exe` suffix.
 
 ---
 

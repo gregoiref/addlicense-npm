@@ -9,5 +9,9 @@
   "license": "MIT",
   "os":  ["darwin"],
   "cpu": ["x64"],
-  "files": ["bin/"]
+  "files": ["bin/"],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  }
 }
