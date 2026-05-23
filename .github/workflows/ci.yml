@@ -114,16 +114,16 @@ jobs:
             pnpm) pnpm add    "${GITHUB_WORKSPACE}/${TARBALL}" ;;
             yarn)
               # yarn berry requires a package.json and .yarnrc.yml before yarn add.
-              # npmScopes maps the @gregoiref scope to GitHub Packages (mirrors .npmrc).
+              # npmScopes maps @gregoiref to GitHub Packages (mirrors .npmrc).
+              # Use printf to avoid heredoc YAML indentation issues.
               echo '{"name":"compat-test","version":"0.0.0","private":true}' > package.json
-              cat > .yarnrc.yml << 'YARNRC'
-nodeLinker: node-modules
-enableImmutableInstalls: false
-npmScopes:
-  gregoiref:
-    npmRegistryServer: "https://npm.pkg.github.com"
-    npmAuthToken: "${NODE_AUTH_TOKEN}"
-YARNRC
+              printf '%s\n' \
+                'nodeLinker: node-modules' \
+                'enableImmutableInstalls: false' \
+                'npmScopes:' \
+                '  gregoiref:' \
+                '    npmRegistryServer: "https://npm.pkg.github.com"' \
+                '    npmAuthToken: "${NODE_AUTH_TOKEN}"' > .yarnrc.yml
               yarn add "${GITHUB_WORKSPACE}/${TARBALL}"
               ;;
             bun) bun add "${GITHUB_WORKSPACE}/${TARBALL}" ;;
