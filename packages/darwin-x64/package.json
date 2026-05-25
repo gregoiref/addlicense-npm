@@ -1,15 +1,21 @@
 {
   "name": "@gregoiref/addlicense-darwin-x64",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "addlicense binary for darwin x64",
   "repository": {
     "type": "git",
     "url": "https://github.com/GregoireF/addlicense-npm.git"
   },
   "license": "MIT",
-  "os":  ["darwin"],
-  "cpu": ["x64"],
-  "files": ["bin/"],
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "files": [
+    "bin/"
+  ],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",
     "access": "public"

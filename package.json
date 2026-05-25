@@ -1,8 +1,16 @@
 {
   "name": "@gregoiref/addlicense",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Fast, minimal license header manager for monorepos and CI pipelines",
-  "keywords": ["license", "spdx", "reuse", "copyright", "header", "cli", "compliance"],
+  "keywords": [
+    "license",
+    "spdx",
+    "reuse",
+    "copyright",
+    "header",
+    "cli",
+    "compliance"
+  ],
   "homepage": "https://github.com/GregoireF/addlicense",
   "repository": {
     "type": "git",
@@ -20,12 +28,12 @@
     "test": "node --test tests/resolve-binary.test.js"
   },
   "optionalDependencies": {
-    "@gregoiref/addlicense-linux-x64":   "1.0.0",
-    "@gregoiref/addlicense-linux-arm64":  "1.0.0",
-    "@gregoiref/addlicense-darwin-x64":   "1.0.0",
-    "@gregoiref/addlicense-darwin-arm64": "1.0.0",
-    "@gregoiref/addlicense-win32-x64":    "1.0.0",
-    "@gregoiref/addlicense-win32-arm64":  "1.0.0"
+    "@gregoiref/addlicense-linux-x64": "1.0.1",
+    "@gregoiref/addlicense-linux-arm64": "1.0.1",
+    "@gregoiref/addlicense-darwin-x64": "1.0.1",
+    "@gregoiref/addlicense-darwin-arm64": "1.0.1",
+    "@gregoiref/addlicense-win32-x64": "1.0.1",
+    "@gregoiref/addlicense-win32-arm64": "1.0.1"
   },
   "engines": {
     "node": ">=18"
