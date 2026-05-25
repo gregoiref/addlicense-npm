@@ -119,7 +119,5 @@ jobs:
           git push origin "${{ steps.version.outputs.tag }}"
 
       - name: Push version bump to main
-        # Branch protection may block direct pushes from github-actions[bot].
-        # The publish and tag steps are the critical path; this commit is best-effort.
         continue-on-error: true
         run: git push origin main
