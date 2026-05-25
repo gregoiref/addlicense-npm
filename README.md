@@ -3,6 +3,8 @@
 > npm package — [addlicense](https://github.com/GregoireF/addlicense) CLI for Node.js projects and CI.
 
 [![CI](https://github.com/GregoireF/addlicense-npm/actions/workflows/ci.yml/badge.svg)](https://github.com/GregoireF/addlicense-npm/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fnpm.pkg.github.com%2F%40gregoiref%2Faddlicense&query=%24.version&label=version&color=orange)](https://github.com/GregoireF/addlicense-npm/packages)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/GregoireF/addlicense-npm/badge)](https://securityscorecards.dev/viewer/?uri=github.com/GregoireF/addlicense-npm)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Distributes the [addlicense](https://github.com/GregoireF/addlicense) Go binary via npm. Each supported platform ships as an optional dependency — npm resolves the correct one automatically at install time. No Go toolchain required.
@@ -105,6 +107,24 @@ Tests cover all `resolveBinary()` branches: package installed, package missing, 
 ## Full CLI reference
 
 See [GregoireF/addlicense](https://github.com/GregoireF/addlicense#flags) for all flags and configuration options.
+
+---
+
+## Ecosystem
+
+| Package | Description |
+|---|---|
+| [addlicense](https://github.com/GregoireF/addlicense) | Core CLI — the Go binary |
+| [addlicense-action](https://github.com/GregoireF/addlicense-action) | GitHub Action |
+| **addlicense-npm** | This repo — npm package |
+| [addlicense-winget](https://github.com/GregoireF/addlicense-winget) | WinGet — `winget install GregoireF.addlicense` |
+| [homebrew-tap](https://github.com/GregoireF/homebrew-tap) | Homebrew — `brew install GregoireF/tap/addlicense` |
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](.github/SECURITY.md).
 
 ---
 
