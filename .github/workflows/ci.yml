@@ -136,7 +136,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-      - uses: GregoireF/addlicense-action@55c99fa137157d4f95969a283be7e48105f6de8d # v1.0.0
+      - uses: GregoireF/addlicense-action@d6b6efe93aadbe35d9c325ccb6af232127342c23 # v1.0.1
         with:
           args: --check .
           version: v1.0.0
